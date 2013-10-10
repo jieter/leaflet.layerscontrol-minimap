@@ -14,7 +14,7 @@ L.control.layers.minimap(basemaps, overlays, options).addTo(map);
 
 ## Not yet complete!
 
- - `Polygon`s do not work as expected.
+ - `Polygon` minimaps do not work as expected.
 
 Could haves:
 

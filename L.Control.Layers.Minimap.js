@@ -44,6 +44,40 @@
 		}
 	};
 
+	var onListScroll = function () {
+		var minimaps = document.getElementsByClassName('leaflet-minimap-container');
+		if (minimaps.length === 0) {
+			return;
+		}
+
+		var minimapHeight = minimaps.item(0).clientHeight;
+		var listHeight = this.clientHeight;
+		var scrollTop = this.scrollTop;
+
+		var first = Math.floor(scrollTop / minimapHeight);
+		var last = Math.ceil((scrollTop + listHeight) / minimapHeight);
+
+		for (var i = 0; i < minimaps.length; ++i) {
+			var mini = minimaps[i].childNodes.item(0);
+			var map = mini._miniMap;
+			var layer = map._layer;
+
+			if (!layer) {
+				continue;
+			}
+
+			if (i >= first && i <= last) {
+				if (!map.hasLayer(layer)) {
+					layer.addTo(map);
+				}
+			} else {
+				if (map.hasLayer(layer)) {
+					map.removeLayer(layer);
+				}
+			}
+		}
+	};
+
 	L.Control.Layers.Minimap = L.Control.Layers.extend({
 		options: {
 			position: 'topright',
@@ -57,51 +91,16 @@
 
 			L.DomUtil.addClass(this._container, 'leaflet-control-layers-minimap');
 
-			L.DomEvent.on(this._form, 'scroll', this._onLayerListScroll);
-		},
-
-		_onLayerListScroll: function () {
-			// var minimaps = this.childNodes;
-
-			// var minimapHeight = minimaps[0].clientHeight;
-			// var listHeight = this.clientHeight;
-			// var scrollTop = this.scrollTop;
-
-			// var first = Math.floor(scrollTop / minimapHeight);
-			// var last = Math.ceil((scrollTop + listHeight) / minimapHeight);
-
-			// console.log(first, last);
-			// for (var i = 0; i < minimaps.length; ++i) {
-			// 	var mini = minimaps[i].childNodes.item(0);
-			// 	var map = mini._miniMap;
-			// 	var layer = map._layer;
-
-			// 	if (!layer) {
-			// 		continue;
-			// 	}
-
-			// 	if (i >= first && i <= last) {
-			// 		if (!map.hasLayer(layer)) {
-			// 			layer.addTo(map);
-			// 		}
-			// 	} else {
-			// 		if (map.hasLayer(layer)) {
-			// 			map.removeLayer(layer);
-			// 		}
-			// 	}
-			// }
+			L.DomEvent.on(this._container, 'scroll', onListScroll);
 		},
 
 		_update: function () {
 			L.Control.Layers.prototype._update.call(this);
 
-			var self = this;
 			this._map.on('resize', this._onResize, this);
 			this._onResize();
 
-			this._map.whenReady(function () {
-				self._onLayerListScroll.call(self._layerList);
-			});
+			this._map.whenReady(onListScroll, this._form);
 		},
 
 		_addItem: function (obj) {
