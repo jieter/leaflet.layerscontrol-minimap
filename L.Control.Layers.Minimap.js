@@ -27,7 +27,6 @@
 		if (layer instanceof L.MultiPolygon) {
 			return L.MultiPolygon(layer.getLatLngs(), options);
 		}
-
 		if (layer instanceof L.Circle) {
 			return L.circle(layer.getLatLng(), layer.getRadius(), options);
 		}
@@ -38,7 +37,6 @@
 		// no interaction on minimaps, add FeatureGroup as LayerGroup
 		if (layer instanceof L.LayerGroup || layer instanceof L.FeatureGroup) {
 			var ret = L.layerGroup();
-
 			layer.eachLayer(function (inner) {
 				ret.addLayer(cloneLayer(inner));
 			});
@@ -49,72 +47,53 @@
 	L.Control.Layers.Minimap = L.Control.Layers.extend({
 		options: {
 			position: 'topright',
+			collapsed: false,
 			topPadding: 10,
 			bottomPadding: 40
 		},
 
 		_initLayout: function () {
-			var className = 'leaflet-control-layers-minimap',
-			    container = this._container = L.DomUtil.create('div', className);
+			L.Control.Layers.prototype._initLayout.call(this);
 
-			// Makes this work on IE10 Touch devices by stopping it from firing a
-			// mouseout event when the touch is released
-			container.setAttribute('aria-haspopup', true);
+			L.DomUtil.addClass(this._container, 'leaflet-control-layers-minimap');
 
-			if (!L.Browser.touch) {
-				L.DomEvent.disableClickPropagation(container);
-				L.DomEvent.on(container, 'mousewheel', L.DomEvent.stopPropagation);
-			} else {
-				L.DomEvent.on(container, 'click', L.DomEvent.stopPropagation);
-			}
-
-			this._layerList = this._form = container;
-
-			L.DomEvent.on(this._layerList, 'scroll', this._onLayerListScroll);
+			L.DomEvent.on(this._form, 'scroll', this._onLayerListScroll);
 		},
 
 		_onLayerListScroll: function () {
-			var minimaps = this.childNodes;
+			// var minimaps = this.childNodes;
 
-			var minimapHeight = minimaps[0].clientHeight;
-			var listHeight = this.clientHeight;
-			var scrollTop = this.scrollTop;
+			// var minimapHeight = minimaps[0].clientHeight;
+			// var listHeight = this.clientHeight;
+			// var scrollTop = this.scrollTop;
 
-			var first = Math.floor(scrollTop / minimapHeight);
-			var last = Math.ceil((scrollTop + listHeight) / minimapHeight);
+			// var first = Math.floor(scrollTop / minimapHeight);
+			// var last = Math.ceil((scrollTop + listHeight) / minimapHeight);
 
-			console.log(first, last);
-			for (var i = 0; i < minimaps.length; ++i) {
-				var mini = minimaps[i].childNodes.item(0);
-				var map = mini._miniMap;
-				var layer = map._layer;
+			// console.log(first, last);
+			// for (var i = 0; i < minimaps.length; ++i) {
+			// 	var mini = minimaps[i].childNodes.item(0);
+			// 	var map = mini._miniMap;
+			// 	var layer = map._layer;
 
-				if (!layer) {
-					continue;
-				}
+			// 	if (!layer) {
+			// 		continue;
+			// 	}
 
-				if (i >= first && i <= last) {
-					if (!map.hasLayer(layer)) {
-						layer.addTo(map);
-					}
-				} else {
-					if (map.hasLayer(layer)) {
-						map.removeLayer(layer);
-					}
-				}
-			}
+			// 	if (i >= first && i <= last) {
+			// 		if (!map.hasLayer(layer)) {
+			// 			layer.addTo(map);
+			// 		}
+			// 	} else {
+			// 		if (map.hasLayer(layer)) {
+			// 			map.removeLayer(layer);
+			// 		}
+			// 	}
+			// }
 		},
 
 		_update: function () {
-			if (!this._container) {
-				return;
-			}
-			this._layerList.innerHTML = '';
-
-			for (var i in this._layers) {
-				this._addItem(this._layers[i]);
-			}
-
+			L.Control.Layers.prototype._update.call(this);
 
 			var self = this;
 			this._map.on('resize', this._onResize, this);
@@ -126,26 +105,27 @@
 		},
 
 		_addItem: function (obj) {
-			var container = L.DomUtil.create('label', 'leaflet-minimap-container', this._layerList);
+			var container = obj.overlay ? this._overlaysList : this._baseLayersList;
+			var label = L.DomUtil.create('label', 'leaflet-minimap-container', container);
 			var checked = this._map.hasLayer(obj.layer);
 
 			this._createMinimap(
-				L.DomUtil.create('div', 'leaflet-minimap', container),
+				L.DomUtil.create('div', 'leaflet-minimap', label),
 				obj.layer
 			);
-			var span = L.DomUtil.create('span', 'leaflet-minimap-label', container);
+			var span = L.DomUtil.create('span', 'leaflet-minimap-label', label);
 
 			var input = L.DomUtil.create('input', 'leaflet-control-layers-selector', span);
 			input.type = 'checkbox';
 			input.defaultChecked = checked;
 			input.layerId = L.stamp(obj.layer);
 
-			L.DomEvent.on(container, 'click', this._onInputClick, this);
+			L.DomEvent.on(label, 'click', this._onInputClick, this);
 
 			var name = L.DomUtil.create('span', '', span);
 			name.innerHTML = ' ' + obj.name;
 
-			return container;
+			return label;
 		},
 
 		_onResize: function () {
