@@ -78,8 +78,9 @@
 
 
 			'Marker': L.marker([50, 2]),
-			'Polyline': L.polyline([[48, -3], [50, -3], [50, -4], [52, 4], [0, 0] ]),
-
+			'Polyline': L.polyline(
+				[[48, -3], [50, -3], [50, -4], [52, 4], [0, 0] ]
+			),
 			'Polygon': L.polygon(
 				[
 					[0, 0], [48, -3], [50, -3], [50, -4], [52, 4], [0, 0]
@@ -88,6 +89,7 @@
 					fillColor: '#ff0000'
 				}
 			),
+			'Circle': L.circle([53, 4], 111111),
 
 			'Stamen Watercolor': L.tileLayer('http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.jpg', {
 				attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
