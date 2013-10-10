@@ -87,6 +87,13 @@
 		};
 
 		var overlays = {
+			'Polygon': L.polygon(
+				[[0, 0], [48, -3], [50, -3], [50, -4], [52, 4], [0, 0]], {
+					color: '#aa0000',
+					fillColor: '#ff0000'
+				}
+			),
+
 			'GeoJSON': L.geoJson(geojson, {
 				style: function (feature) {
 					if (feature.geometry.type === 'LineString') {
@@ -124,12 +131,6 @@
 			'Marker': L.marker([50, 2]),
 			'Polyline': L.polyline(
 				[[48, -3], [50, -3], [50, -4], [52, 4], [0, 0] ]
-			),
-			'Polygon': L.polygon(
-				[[0, 0], [48, -3], [50, -3], [50, -4], [52, 4], [0, 0]], {
-					color: '#aa0000',
-					fillColor: '#ff0000'
-				}
 			),
 			'Circle': L.circle([53, 4], 111111)
 		};
