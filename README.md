@@ -15,7 +15,7 @@ In addition to the options available for `L.Control.Layers`:
 
  - `topPadding`: pixels the control is padded from top of the map.
  - `bottomPadding`: pixels the control needs to keep free at the bottom of the control.
- - `overlayBackgroundLayer
+ - `overlayBackgroundLayer` a (tile)layer which is added to the minimap of each overlay.
 
 ![Screenshot](screenshot.png)
 
