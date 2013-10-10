@@ -1,6 +1,6 @@
 # Leaflet Layers control with minimaps
 
-Displays minimaps in a layers control.
+Displays minimaps in a layers control. Works with Leaflet 0.6.4.
 
 ## API
 
@@ -14,7 +14,6 @@ L.control.layers.minimap(basemaps, overlays, options).addTo(map);
 
 ## Not yet complete!
 
- - scrollbar for big lists
  - Currently only implemented for basemaps, not overlays.
  - `Polygon`s do not work as expected.
 

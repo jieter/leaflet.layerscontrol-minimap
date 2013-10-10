@@ -48,7 +48,9 @@
 
 	L.Control.Layers.Minimap = L.Control.Layers.extend({
 		options: {
-			position: 'topright'
+			position: 'topright',
+			topPadding: 10,
+			bottomPadding: 40
 		},
 
 		_initLayout: function () {
@@ -81,6 +83,7 @@
 			var first = Math.floor(scrollTop / minimapHeight);
 			var last = Math.ceil((scrollTop + listHeight) / minimapHeight);
 
+			console.log(first, last);
 			for (var i = 0; i < minimaps.length; ++i) {
 				var mini = minimaps[i].childNodes.item(0);
 				var map = mini._miniMap;
@@ -112,7 +115,11 @@
 				this._addItem(this._layers[i]);
 			}
 
+
 			var self = this;
+			this._map.on('resize', this._onResize, this);
+			this._onResize();
+
 			this._map.whenReady(function () {
 				self._onLayerListScroll.call(self._layerList);
 			});
@@ -139,6 +146,16 @@
 			name.innerHTML = ' ' + obj.name;
 
 			return container;
+		},
+
+		_onResize: function () {
+			var mapHeight = this._map.getContainer().clientHeight;
+			var controlHeight = this._container.clientHeight;
+
+			if (controlHeight > mapHeight - this.options.bottomPadding) {
+				this._container.style.overflowY = 'scroll';
+			}
+			this._container.style.maxHeight = (mapHeight - this.options.bottomPadding - this.options.topPadding) + 'px';
 		},
 
 		_createMinimap: function (mapContainer, originalLayer) {
