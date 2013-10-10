@@ -131,10 +131,17 @@
 			);
 			var span = L.DomUtil.create('span', 'leaflet-minimap-label', label);
 
-			var input = L.DomUtil.create('input', 'leaflet-control-layers-selector', span);
-			input.type = 'checkbox';
-			input.defaultChecked = checked;
+			var input;
+			if (obj.overlay) {
+				input = document.createElement('input');
+				input.type = 'checkbox';
+				input.className = 'leaflet-control-layers-selector';
+				input.defaultChecked = checked;
+			} else {
+				input = this._createRadioElement('leaflet-base-layers', checked);
+			}
 			input.layerId = L.stamp(obj.layer);
+			span.appendChild(input);
 
 			L.DomEvent.on(label, 'click', this._onInputClick, this);
 
