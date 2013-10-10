@@ -14,6 +14,11 @@ L.control.layers.minimap(basemaps, overlays, options).addTo(map);
 
 ## Not yet complete!
 
+ - scrollbar for big lists
  - Currently only implemented for basemaps, not overlays.
- - `MultiPolyLine`, `MultiPolygon`, `CircleMarker`, `LayerGroup`, `FeatureGroup`, `GeoJSON` not supported.
  - `Polygon`s do not work as expected.
+
+Could haves:
+
+ - zoom offsets
+ - basemap option for overlayish layers (maybe just copy the basemap from the main map.)

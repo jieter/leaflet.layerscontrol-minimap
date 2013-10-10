@@ -1,6 +1,51 @@
 (function () {
     'use strict';
 
+	var cloneLayer = function (layer) {
+		var options = layer.options;
+		if (layer instanceof L.TileLayer) {
+			return L.tileLayer(layer._url, options);
+		}
+		if (layer instanceof L.ImageOverlay) {
+			return L.imageOverlay(layer._url, layer._bounds, options);
+		}
+		if (layer instanceof L.Marker) {
+			return L.marker(layer.getLatLng(), options);
+		}
+		if (layer instanceof L.circleMarker) {
+			return L.circleMarker(layer.getLatLng(), options);
+		}
+		if (layer instanceof L.Polyline) {
+			return L.polyline(layer.getLatLngs(), options);
+		}
+		if (layer instanceof L.MultiPolyline) {
+			return L.polyline(layer.getLatLngs(), options);
+		}
+		if (layer instanceof L.Polygon || layer instanceof L.Rectangle) {
+			return L.polygon(layer.getLatLngs(), options);
+		}
+		if (layer instanceof L.MultiPolygon) {
+			return L.MultiPolygon(layer.getLatLngs(), options);
+		}
+
+		if (layer instanceof L.Circle) {
+			return L.circle(layer.getLatLng(), layer.getRadius(), options);
+		}
+		if (layer instanceof L.GeoJSON) {
+			return L.geoJson(layer.toGeoJSON(), options);
+		}
+
+		// no interaction on minimaps, add FeatureGroup as LayerGroup
+		if (layer instanceof L.LayerGroup || layer instanceof L.FeatureGroup) {
+			var ret = L.layerGroup();
+
+			layer.eachLayer(function (inner) {
+				ret.addLayer(cloneLayer(inner));
+			});
+			return ret;
+		}
+	};
+
 	L.Control.Layers.Minimap = L.Control.Layers.extend({
 		options: {
 			position: 'topright'
@@ -109,7 +154,7 @@
 			minimap.scrollWheelZoom.disable();
 
 			// create tilelayer, but do not add it to the map yet.
-			minimap._layer = this._cloneLayer(originalLayer);
+			minimap._layer = cloneLayer(originalLayer);
 
 			var map = this._map;
 			map.whenReady(function () {
@@ -118,23 +163,7 @@
 			});
 		},
 
-		_cloneLayer: function (layer) {
-			if (layer instanceof L.TileLayer) {
-				return L.tileLayer(layer._url, layer.options);
-			}
-			if (layer instanceof L.Marker) {
-				return L.marker(layer.getLatLng(), layer.options);
-			}
-			if (layer instanceof L.Polyline) {
-				return L.polyline(layer.getLatLngs(), layer.options);
-			}
-			if (layer instanceof L.Polygon || layer instanceof L.Rectangle) {
-				return L.polygon(layer.getLatLngs(), layer.options);
-			}
-			if (layer instanceof L.Circle) {
-				return L.circle(layer.getLatLng(), layer.getRadius(), layer.options);
-			}
-		}
+
 	});
 
 	L.control.layers.minimap = function (layers, options) {
