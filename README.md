@@ -9,6 +9,13 @@ Follows Leaflets [`L.Control.Layers`](http://leafletjs.com/reference.html#contro
 ```JavaScript
 L.control.layers.minimap(basemaps, overlays, options).addTo(map);
 ```
+### extra options
+
+In addition to the options available for `L.Control.Layers`:
+
+ - `topPadding`: pixels the control is padded from top of the map.
+ - `bottomPadding`: pixels the control needs to keep free at the bottom of the control.
+ - `overlayBackgroundLayer
 
 ![Screenshot](screenshot.png)
 
@@ -19,4 +26,3 @@ L.control.layers.minimap(basemaps, overlays, options).addTo(map);
 Could haves:
 
  - zoom offsets
- - basemap option for overlayish layers (maybe just copy the basemap from the main map.)

@@ -50,16 +50,21 @@
 			return;
 		}
 
-		var minimapHeight = minimaps.item(0).clientHeight;
-		var listHeight = this.clientHeight;
-		var scrollTop = this.scrollTop;
+		var first, last;
+		if (true) {//L.DomUtil.hasClass(this, 'leaflet-control-layers-expanded')) {
+			var minimapHeight = minimaps.item(0).clientHeight;
+			var listHeight = this.clientHeight;
+			var scrollTop = this.scrollTop;
 
-		var first = Math.floor(scrollTop / minimapHeight);
-		var last = Math.ceil((scrollTop + listHeight) / minimapHeight);
+			first = Math.floor(scrollTop / minimapHeight);
+			last = Math.ceil((scrollTop + listHeight) / minimapHeight);
+		} else {
+			first = last = -1;
+		}
 
 		for (var i = 0; i < minimaps.length; ++i) {
-			var mini = minimaps[i].childNodes.item(0);
-			var map = mini._miniMap;
+			var minimap = minimaps[i].childNodes.item(0);
+			var map = minimap._miniMap;
 			var layer = map._layer;
 
 			if (!layer) {
@@ -83,7 +88,13 @@
 			position: 'topright',
 			collapsed: false,
 			topPadding: 10,
-			bottomPadding: 40
+			bottomPadding: 40,
+			overlayBackgroundLayer: L.tileLayer('http://a{s}.acetate.geoiq.com/tiles/acetate-base/{z}/{x}/{y}.png', {
+				attribution: '&copy;2012 Esri & Stamen, Data from OSM and Natural Earth',
+				subdomains: '0123',
+				minZoom: 2,
+				maxZoom: 18
+			})
 		},
 
 		_initLayout: function () {
@@ -92,6 +103,11 @@
 			L.DomUtil.addClass(this._container, 'leaflet-control-layers-minimap');
 
 			L.DomEvent.on(this._container, 'scroll', onListScroll);
+
+			var self = this;
+			this._map.on('baselayerchange', function (event) {
+				self._baselayer = event.layer;
+			});
 		},
 
 		_update: function () {
@@ -110,7 +126,8 @@
 
 			this._createMinimap(
 				L.DomUtil.create('div', 'leaflet-minimap', label),
-				obj.layer
+				obj.layer,
+				obj.overlay
 			);
 			var span = L.DomUtil.create('span', 'leaflet-minimap-label', label);
 
@@ -137,7 +154,7 @@
 			this._container.style.maxHeight = (mapHeight - this.options.bottomPadding - this.options.topPadding) + 'px';
 		},
 
-		_createMinimap: function (mapContainer, originalLayer) {
+		_createMinimap: function (mapContainer, originalLayer, isOverlay) {
 			var minimap = mapContainer._miniMap = L.map(mapContainer, {
 				attributionControl: false,
 				zoomControl: false
@@ -150,7 +167,14 @@
 			minimap.scrollWheelZoom.disable();
 
 			// create tilelayer, but do not add it to the map yet.
-			minimap._layer = cloneLayer(originalLayer);
+			if (isOverlay) {
+				minimap._layer = L.layerGroup([
+					cloneLayer(this.options.overlayBackgroundLayer),
+					cloneLayer(originalLayer)
+				]);
+			} else {
+				minimap._layer = cloneLayer(originalLayer);
+			}
 
 			var map = this._map;
 			map.whenReady(function () {

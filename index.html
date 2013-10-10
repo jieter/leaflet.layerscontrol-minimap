@@ -136,10 +136,6 @@
 
 
 		L.control.layers.minimap(baselayers, overlays).addTo(map);
-		L.control.layers(baselayers, overlays, {
-			position: 'bottomleft',
-			collapsed: false
-		}).addTo(map);
 
 		baselayers['OpenStreetMap'].addTo(map);
 
