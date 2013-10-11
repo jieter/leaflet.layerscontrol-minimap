@@ -1,5 +1,12 @@
+/*
+ * Leaflet.layerscontrol-minimap
+ *
+ * Layers control with synced minimaps for Leaflet.
+ *
+ * Jan Pieter Waagmeester <jieter@jieter.nl>
+ */
 (function () {
-    'use strict';
+	'use strict';
 
 	var cloneLayer = function (layer) {
 		var options = layer.options;
