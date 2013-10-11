@@ -195,8 +195,8 @@
 		}
 	});
 
-	L.control.layers.minimap = function (layers, options) {
-		return new L.Control.Layers.Minimap(layers, options);
+	L.control.layers.minimap = function (baselayers, overlays, options) {
+		return new L.Control.Layers.Minimap(baselayers, overlays, options);
 	};
 
 })();
