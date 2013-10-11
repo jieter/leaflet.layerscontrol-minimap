@@ -1,21 +1,32 @@
 # Leaflet Layers control with minimaps
 
-Displays minimaps in a layers control. Works with Leaflet 0.6.4.
+Displays minimaps in a layers control.
 
-## API
+ - Only updates layers currently visible.
+ - Tested with Leaflet 0.6.4.
 
-Follows Leaflets [`L.Control.Layers`](http://leafletjs.com/reference.html#control-layers), but needs [`L.Sync`](https://github.com/turban/Leaflet.Sync) (in `lib/L.Map.Sync.js`) + some css (in `control.layers.minimap.css`):
+## Usage
+
+Exaclty like [Leaflets default layers control](http://leafletjs.com/reference.html#control-layers), with some extra options. Add the scripts + css to your html:
+
+```HTML
+<link rel="stylesheet" href="control.layers.minimap.css" />
+<script src="lib/L.Map.Sync.js"></script>
+<script src="L.Control.Layers.Minimap.js"></script>
+```
+and add the control to your map:
 
 ```JavaScript
 L.control.layers.minimap(basemaps, overlays, options).addTo(map);
 ```
+
 ### extra options
 
 In addition to the options available for `L.Control.Layers`:
 
- - `topPadding`: pixels the control is padded from top of the map.
- - `bottomPadding`: pixels the control needs to keep free at the bottom of the control.
- - `overlayBackgroundLayer` a (tile)layer which is added to the minimap of each overlay.
+ - `topPadding`: pixels the control is padded from top of the map. Defaults to 10px.
+ - `bottomPadding`: pixels the control needs to keep free at the bottom of the control. Defaults to 40px.
+ - `overlayBackgroundLayer` a (tile)layer which is added to the minimap of each overlay. Defaults to `acetate-base`.
 
 ![Screenshot](screenshot.png)
 
@@ -26,3 +37,4 @@ In addition to the options available for `L.Control.Layers`:
 Could haves:
 
  - zoom offsets
+

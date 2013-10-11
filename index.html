@@ -136,13 +136,14 @@
 		};
 
 
-		L.control.layers.minimap(baselayers, overlays).addTo(map);
+		L.control.layers.minimap(baselayers, overlays, {
+			collapsed: false
+		}).addTo(map);
 
 		baselayers['OpenStreetMap'].addTo(map);
 
 		var info = L.control();
 		info.options.position = 'topleft';
-
 
 		info.onAdd = function () {
 			var div = L.DomUtil.create('div', 'info');

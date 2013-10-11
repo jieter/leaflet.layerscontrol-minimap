@@ -44,49 +44,9 @@
 		}
 	};
 
-	var onListScroll = function () {
-		var minimaps = document.getElementsByClassName('leaflet-minimap-container');
-		if (minimaps.length === 0) {
-			return;
-		}
-
-		var first, last;
-		if (true) {//L.DomUtil.hasClass(this, 'leaflet-control-layers-expanded')) {
-			var minimapHeight = minimaps.item(0).clientHeight;
-			var listHeight = this.clientHeight;
-			var scrollTop = this.scrollTop;
-
-			first = Math.floor(scrollTop / minimapHeight);
-			last = Math.ceil((scrollTop + listHeight) / minimapHeight);
-		} else {
-			first = last = -1;
-		}
-
-		for (var i = 0; i < minimaps.length; ++i) {
-			var minimap = minimaps[i].childNodes.item(0);
-			var map = minimap._miniMap;
-			var layer = map._layer;
-
-			if (!layer) {
-				continue;
-			}
-
-			if (i >= first && i <= last) {
-				if (!map.hasLayer(layer)) {
-					layer.addTo(map);
-				}
-			} else {
-				if (map.hasLayer(layer)) {
-					map.removeLayer(layer);
-				}
-			}
-		}
-	};
-
 	L.Control.Layers.Minimap = L.Control.Layers.extend({
 		options: {
 			position: 'topright',
-			collapsed: false,
 			topPadding: 10,
 			bottomPadding: 40,
 			overlayBackgroundLayer: L.tileLayer('http://a{s}.acetate.geoiq.com/tiles/acetate-base/{z}/{x}/{y}.png', {
@@ -97,17 +57,20 @@
 			})
 		},
 
+		isCollapsed: function () {
+			return !L.DomUtil.hasClass(this._container, 'leaflet-control-layers-expanded');
+		},
+
+		_expand: function () {
+			L.Control.Layers.prototype._expand.call(this);
+			this._onListScroll();
+		},
+
 		_initLayout: function () {
 			L.Control.Layers.prototype._initLayout.call(this);
 
 			L.DomUtil.addClass(this._container, 'leaflet-control-layers-minimap');
-
-			L.DomEvent.on(this._container, 'scroll', onListScroll);
-
-			var self = this;
-			this._map.on('baselayerchange', function (event) {
-				self._baselayer = event.layer;
-			});
+			L.DomEvent.on(this._container, 'scroll', this._onListScroll, this);
 		},
 
 		_update: function () {
@@ -116,7 +79,7 @@
 			this._map.on('resize', this._onResize, this);
 			this._onResize();
 
-			this._map.whenReady(onListScroll, this._form);
+			this._map.whenReady(this._onListScroll, this);
 		},
 
 		_addItem: function (obj) {
@@ -161,6 +124,47 @@
 			this._container.style.maxHeight = (mapHeight - this.options.bottomPadding - this.options.topPadding) + 'px';
 		},
 
+		_onListScroll: function () {
+			var minimaps = document.getElementsByClassName('leaflet-minimap-container');
+			if (minimaps.length === 0) {
+				return;
+			}
+
+			var first, last;
+			if (this.isCollapsed()) {
+				first = last = -1;
+			} else {
+				var minimapHeight = minimaps.item(0).clientHeight;
+				var container = this._container;
+				var listHeight = container.clientHeight;
+				var scrollTop = container.scrollTop;
+
+				first = Math.floor(scrollTop / minimapHeight);
+				last = Math.ceil((scrollTop + listHeight) / minimapHeight);
+			}
+
+			for (var i = 0; i < minimaps.length; ++i) {
+				var minimap = minimaps[i].childNodes.item(0);
+				var map = minimap._miniMap;
+				var layer = map._layer;
+
+				if (!layer) {
+					continue;
+				}
+
+				if (i >= first && i <= last) {
+					if (!map.hasLayer(layer)) {
+						layer.addTo(map);
+					}
+					map.invalidateSize();
+				} else {
+					if (map.hasLayer(layer)) {
+						map.removeLayer(layer);
+					}
+				}
+			}
+		},
+
 		_createMinimap: function (mapContainer, originalLayer, isOverlay) {
 			var minimap = mapContainer._miniMap = L.map(mapContainer, {
 				attributionControl: false,
@@ -188,9 +192,7 @@
 				minimap.setView(map.getCenter(), map.getZoom());
 				map.sync(minimap);
 			});
-		},
-
-
+		}
 	});
 
 	L.control.layers.minimap = function (layers, options) {
