@@ -2,12 +2,14 @@
 
 Displays minimaps in a layers control.
 
- - Only updates layers currently visible.
+ - Only updates layers currently in view.
+ - Depends on [Leaflet.Sync](https://github.com/turban/Leaflet.Sync) for syncing.
  - Tested with Leaflet 0.6.4.
 
 ## Usage
 
-Exaclty like [Leaflets default layers control](http://leafletjs.com/reference.html#control-layers), with some extra options. Add the scripts + css to your html:
+Exactly like [Leaflets default layers control](http://leafletjs.com/reference.html#control-layers),
+with some extra options. Add the scripts + css to your html:
 
 ```HTML
 <link rel="stylesheet" href="control.layers.minimap.css" />
@@ -20,7 +22,7 @@ and add the control to your map:
 L.control.layers.minimap(basemaps, overlays, options).addTo(map);
 ```
 
-### extra options
+### Extra options
 
 In addition to the options available for `L.Control.Layers`:
 
@@ -29,12 +31,3 @@ In addition to the options available for `L.Control.Layers`:
  - `overlayBackgroundLayer` a (tile)layer which is added to the minimap of each overlay. Defaults to `acetate-base`.
 
 ![Screenshot](screenshot.png)
-
-## Not yet complete!
-
- - `Polygon` minimaps do not work as expected.
-
-Could haves:
-
- - zoom offsets
-
