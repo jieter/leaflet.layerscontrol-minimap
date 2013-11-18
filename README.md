@@ -4,7 +4,7 @@ Displays minimaps in a layers control.
 
  - Only updates layers currently in view.
  - Depends on [Leaflet.Sync](https://github.com/turban/Leaflet.Sync) for syncing.
- - Tested with Leaflet 0.6.4.
+ - Tested with Leaflet 0.7
 
 ## Usage
 
