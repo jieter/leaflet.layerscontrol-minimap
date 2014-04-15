@@ -30,4 +30,14 @@ In addition to the options available for `L.Control.Layers`:
  - `bottomPadding`: pixels the control needs to keep free at the bottom of the control. Defaults to 40px.
  - `overlayBackgroundLayer` a (tile)layer which is added to the minimap of each overlay. Defaults to `acetate-base`.
 
+### Extra methods
+
+One extra method is added:
+
+ - `filter(string)`: if called with a non-empty string is passed, only layers with a name containing that substring are shown, while the others are set to `display: none`.
+
+## Live example
+
+http://jieter.github.io/Leaflet.layerscontrol-minimap/
+
 ![Screenshot](screenshot.png)
