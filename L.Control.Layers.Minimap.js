@@ -65,6 +65,24 @@
 			})
 		},
 
+
+		filter: function (string) {
+			string = string.trim();
+
+			var layerLabels = this._container.querySelectorAll('label');
+			for (var i = 0; i < layerLabels.length; i++) {
+				var layerLabel = layerLabels[i];
+				var display;
+
+				if (string !== '' && layerLabel._layerName.indexOf(string) === -1) {
+					display = 'none';
+				} else {
+					display = 'block';
+				}
+				layerLabel.style.display = display;
+			}
+		},
+
 		isCollapsed: function () {
 			return !L.DomUtil.hasClass(this._container, 'leaflet-control-layers-expanded');
 		},
@@ -93,6 +111,7 @@
 		_addItem: function (obj) {
 			var container = obj.overlay ? this._overlaysList : this._baseLayersList;
 			var label = L.DomUtil.create('label', 'leaflet-minimap-container', container);
+			label._layerName = obj.name;
 			var checked = this._map.hasLayer(obj.layer);
 
 			this._createMinimap(

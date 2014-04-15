@@ -6,7 +6,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
-	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7/leaflet.css" />
+	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
 	<style>
 		html {
 			height: 100%;
@@ -45,7 +45,7 @@
 
 	<div id="map" class="map"></div>
 
-	<script src="http://cdn.leafletjs.com/leaflet-0.7/leaflet.js"></script>
+	<script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
 
 	<script src="lib/L.Map.Sync.js"></script>
 	<script src="L.Control.Layers.Minimap.js"></script>
@@ -133,15 +133,26 @@
 		};
 
 
-		L.control.layers.minimap(baselayers, overlays, {
+		var layersControl = L.control.layers.minimap(baselayers, overlays, {
 			collapsed: false
 		}).addTo(map);
 
+		var filter = function (e) {
+			var hash = window.location.hash;
+			var filterIndex = hash.indexOf('filter=');
+			if (filterIndex !== -1) {
+				var filterString = hash.substr(filterIndex + 7).trim();
+				layersControl.filter(filterString);
+			}
+		};
+
 		baselayers['OpenStreetMap'].addTo(map);
+
+		L.DomEvent.on(window, 'hashchange', filter);
+		filter();
 
 		var info = L.control();
 		info.options.position = 'topleft';
-
 		info.onAdd = function () {
 			var div = L.DomUtil.create('div', 'info');
 			L.DomUtil.create('h4', '', div).innerHTML = '<a href="https://github.com/jieter/Leaflet.layerscontrol-minimap">Leaflet.layers-control-minimap preview</a>';
