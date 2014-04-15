@@ -72,15 +72,14 @@
 			var layerLabels = this._container.querySelectorAll('label');
 			for (var i = 0; i < layerLabels.length; i++) {
 				var layerLabel = layerLabels[i];
-				var display;
 
 				if (string !== '' && layerLabel._layerName.indexOf(string) === -1) {
-					display = 'none';
+					L.DomUtil.addClass(layerLabel, 'leaflet-minimap-hidden');
 				} else {
-					display = 'block';
+					L.DomUtil.removeClass(layerLabel, 'leaflet-minimap-hidden');
 				}
-				layerLabel.style.display = display;
 			}
+			this._onListScroll();
 		},
 
 		isCollapsed: function () {
@@ -152,7 +151,7 @@
 		},
 
 		_onListScroll: function () {
-			var minimaps = document.getElementsByClassName('leaflet-minimap-container');
+			var minimaps = document.querySelectorAll('label[class="leaflet-minimap-container"]');
 			if (minimaps.length === 0) {
 				return;
 			}
