@@ -9,6 +9,10 @@
 	'use strict';
 
 	var cloneLayer = function (layer) {
+		// for leaflet versions 0.8-dev and later, check if layer is instance of Layer
+		if ('Layer' in L && !layer instanceof L.Layer) {
+			throw 'Can only clone L.Layer objects';
+		}
 		var options = layer.options;
 		if (layer instanceof L.TileLayer) {
 			return L.tileLayer(layer._url, options);
@@ -28,12 +32,6 @@
 		}
 		if (layer instanceof L.Polyline) {
 			return L.polyline(layer.getLatLngs(), options);
-		}
-		if (layer instanceof L.MultiPolyline) {
-			return L.polyline(layer.getLatLngs(), options);
-		}
-		if (layer instanceof L.MultiPolygon) {
-			return L.MultiPolygon(layer.getLatLngs(), options);
 		}
 		if (layer instanceof L.Circle) {
 			return L.circle(layer.getLatLng(), layer.getRadius(), options);
@@ -64,7 +62,6 @@
 				maxZoom: 18
 			})
 		},
-
 
 		filter: function (string) {
 			string = string.trim();
