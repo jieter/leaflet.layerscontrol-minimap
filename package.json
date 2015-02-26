@@ -1,6 +1,6 @@
 {
   "name": "Leaflet.layerscontrol-minimap",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Leaflet layers control with minimaps",
   "main": "L.Control.Layers.Minimap.js",
   "dependencies": {
