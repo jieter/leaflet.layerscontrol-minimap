@@ -1,0 +1,33 @@
+{
+  "name": "Leaflet.layerscontrol-minimap",
+  "version": "1.0.0",
+  "description": "Leaflet layers control with minimaps",
+  "main": "L.Control.Layers.Minimap.js",
+  "dependencies": {
+    "eslint": "^0.15.0"
+  },
+  "devDependencies": {
+    "eslint": "^0.15.0",
+    "mversion": "^1.9.0"
+  },
+  "scripts": {
+    "test": "eslint L.Control.Layers.Minimap.js",
+    "release": "mversion patch -m"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jieter/Leaflet.layerscontrol-minimap.git"
+  },
+  "keywords": [
+    "leaflet",
+    "layers",
+    "control",
+    "minimap"
+  ],
+  "author": "Jan Pieter Waagmeester <jieter@jieter.nl>",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/jieter/Leaflet.layerscontrol-minimap/issues"
+  },
+  "homepage": "https://github.com/jieter/Leaflet.layerscontrol-minimap"
+}
