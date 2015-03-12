@@ -23,10 +23,10 @@ L.Control.Layers.Minimap = L.Control.Layers.extend({
 		})
 	},
 
-
 	filter: function (string) {
 		string = string.trim();
 
+		var visibleLayers = {};
 		var layerLabels = this._container.querySelectorAll('label');
 		for (var i = 0; i < layerLabels.length; i++) {
 			var layerLabel = layerLabels[i];
@@ -35,9 +35,12 @@ L.Control.Layers.Minimap = L.Control.Layers.extend({
 				L.DomUtil.addClass(layerLabel, 'leaflet-minimap-hidden');
 			} else {
 				L.DomUtil.removeClass(layerLabel, 'leaflet-minimap-hidden');
+				visibleLayers[layerLabel._layerName] = cloneLayer(layerLabel._minimap._layer);
 			}
 		}
 		this._onListScroll();
+
+		return visibleLayers;
 	},
 
 	isCollapsed: function () {
@@ -71,7 +74,7 @@ L.Control.Layers.Minimap = L.Control.Layers.extend({
 		label._layerName = obj.name;
 		var checked = this._map.hasLayer(obj.layer);
 
-		this._createMinimap(
+		label._minimap = this._createMinimap(
 			L.DomUtil.create('div', 'leaflet-minimap', label),
 			obj.layer,
 			obj.overlay
@@ -174,6 +177,8 @@ L.Control.Layers.Minimap = L.Control.Layers.extend({
 			minimap.setView(map.getCenter(), map.getZoom());
 			map.sync(minimap);
 		});
+
+		return minimap;
 	}
 });
 
