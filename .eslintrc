@@ -20,9 +20,10 @@
   "globals": {
     "L": true,
     "module": false,
-    "define": false
+    "define": false,
   },
   "env": {
-    "browser": true
+    "browser": true,
+    "node": true
   }
 }
