@@ -162,7 +162,8 @@ L.Control.Layers.Minimap = L.Control.Layers.extend({
 		minimap.scrollWheelZoom.disable();
 
 		// create tilelayer, but do not add it to the map yet.
-		if (isOverlay) {
+		if (isOverlay && this.options.overlayBackgroundLayer) {
+			// add a background for overlays if a background layer is defined.
 			minimap._layer = L.layerGroup([
 				cloneLayer(this.options.overlayBackgroundLayer),
 				cloneLayer(originalLayer)
