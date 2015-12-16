@@ -2,7 +2,7 @@
 /*
  * Leaflet.layerscontrol-minimap
  *
- * Layers control with synced minimaps for Leaflet.
+ * Drop in replacement for L.Control.Layers with synced minimaps for Leaflet.
  *
  * Jan Pieter Waagmeester <jieter@jieter.nl>
  */
