@@ -28,7 +28,7 @@ In addition to the options available for `L.Control.Layers`:
 
  - `topPadding`: number of pixels padding to the top of the map. Defaults to `10`.
  - `bottomPadding`: number of pixels padding at the bottom of the map. Defaults to `40`.
- - `overlayBackgroundLayer` a (tile)layer which is added to the minimap of each overlay as a background. If set to false, no background layer wil be used for overlays. Defaults to [GeoIQ Acetate basemap](http://leaflet-extras.github.io/leaflet-providers/preview/#filter=Acetate.basemap)
+ - `overlayBackgroundLayer` a (tile)layer which is added to the minimap of each overlay as a background. If set to false, no background layer wil be used for overlays. Defaults to [Hydda Base](http://leaflet-extras.github.io/leaflet-providers/preview/#filter=Hydda.Base)
 
 ### Extra methods
 

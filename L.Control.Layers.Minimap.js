@@ -15,11 +15,9 @@ L.Control.Layers.Minimap = L.Control.Layers.extend({
 		position: 'topright',
 		topPadding: 10,
 		bottomPadding: 40,
-		overlayBackgroundLayer: L.tileLayer('http://a{s}.acetate.geoiq.com/tiles/acetate-base/{z}/{x}/{y}.png', {
-			attribution: '&copy;2012 Esri & Stamen, Data from OSM and Natural Earth',
-			subdomains: '0123',
-			minZoom: 2,
-			maxZoom: 18
+		overlayBackgroundLayer: L.tileLayer('http://{s}.tile.openstreetmap.se/hydda/base/{z}/{x}/{y}.png', {
+			attribution: 'Tiles courtesy of <a href="http://openstreetmap.se/" target="_blank">OpenStreetMap Sweden</a>' +
+			' &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 		})
 	},
 
