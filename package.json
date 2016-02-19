@@ -5,13 +5,11 @@
   "main": "L.Control.Layers.Minimap.js",
   "style": "control.layers.minimap.css",
   "dependencies": {
-    "eslint": "^0.15.0",
     "leaflet-clonelayer": "^1.0.1",
     "leaflet.sync": "0.0.4"
   },
   "devDependencies": {
     "browserify": "^9.0.3",
-    "eslint": "^0.15.0",
     "mversion": "^1.9.0"
   },
   "scripts": {
