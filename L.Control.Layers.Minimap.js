@@ -151,11 +151,7 @@ L.Control.Layers.Minimap = L.Control.Layers.extend({
     _createMinimap: function (mapContainer, originalLayer, isOverlay) {
         var minimap = mapContainer._miniMap = L.map(mapContainer, {
             attributionControl: false,
-            zoomControl: false,
-            dragging: false,
-            touchZoom: false,
-            doubleClickZoom: false,
-            scrollWheelZoom: false,
+            zoomControl: false
         });
 
         // disable interaction.
