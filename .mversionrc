@@ -2,7 +2,7 @@
   "commitMessage": "Bumped version to %s",
   "tagName": "%s",
   "scripts": {
-      "preupdate": "npm run make && git commit L.Control.Layers.Minimap.js -m 'Browserified'",
+      "preupdate": "npm run bundle",
       "postupdate": "git push && git push --tags && npm publish"
   }
 }
