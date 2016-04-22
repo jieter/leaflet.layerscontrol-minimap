@@ -4,6 +4,7 @@
   "description": "Leaflet layers control with minimaps",
   "main": "L.Control.Layers.Minimap.js",
   "dependencies": {
+    "eslint": "^0.15.0",
     "leaflet-clonelayer": "^1.0.1",
     "leaflet.sync": "0.0.4"
   },
