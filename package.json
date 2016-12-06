@@ -4,18 +4,17 @@
   "description": "Leaflet layers control with minimaps",
   "main": "L.Control.Layers.Minimap.js",
   "dependencies": {
-    "eslint": "^0.15.0",
     "leaflet-clonelayer": "^1.0.3",
     "leaflet.sync": "0.0.5"
   },
   "devDependencies": {
     "browserify": "^9.0.3",
-    "eslint": "^2.7.0",
-    "eslint-plugin-html": "^1.4.0",
+    "eslint": "^3.11.1",
+    "eslint-plugin-html": "^1.7.0",
     "mversion": "^1.9.0"
   },
   "scripts": {
-    "test": "eslint index.js index.html example/example.js",
+    "test": "eslint index.js index.html example/example.js example/*.html",
     "bundle": "browserify index.js > L.Control.Layers.Minimap.js",
     "release": "mversion patch -m"
   },
