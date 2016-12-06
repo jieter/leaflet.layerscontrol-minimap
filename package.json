@@ -5,8 +5,8 @@
   "main": "L.Control.Layers.Minimap.js",
   "dependencies": {
     "eslint": "^0.15.0",
-    "leaflet-clonelayer": "^1.0.1",
-    "leaflet.sync": "0.0.4"
+    "leaflet-clonelayer": "^1.0.3",
+    "leaflet.sync": "0.0.5"
   },
   "devDependencies": {
     "browserify": "^9.0.3",

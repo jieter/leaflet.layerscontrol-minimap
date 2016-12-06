@@ -153,13 +153,14 @@ L.Control.Layers.Minimap = L.Control.Layers.extend({
             zoomControl: false
         });
 
-        // disable interaction.
+        // disable minimap interaction.
         minimap.dragging.disable();
         minimap.touchZoom.disable();
         minimap.doubleClickZoom.disable();
         minimap.scrollWheelZoom.disable();
 
-        // create tilelayer, but do not add it to the map yet.
+        // create tilelayer, but do not add it to the map yet
+        // (only after it's scrolled into view).
         if (isOverlay && this.options.overlayBackgroundLayer) {
             // add a background for overlays if a background layer is defined.
             minimap._layer = L.layerGroup([
