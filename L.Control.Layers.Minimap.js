@@ -154,13 +154,14 @@ L.Control.Layers.Minimap = L.Control.Layers.extend({
             zoomControl: false
         });
 
-        // disable interaction.
+        // disable minimap interaction.
         minimap.dragging.disable();
         minimap.touchZoom.disable();
         minimap.doubleClickZoom.disable();
         minimap.scrollWheelZoom.disable();
 
-        // create tilelayer, but do not add it to the map yet.
+        // create tilelayer, but do not add it to the map yet
+        // (only after it's scrolled into view).
         if (isOverlay && this.options.overlayBackgroundLayer) {
             // add a background for overlays if a background layer is defined.
             minimap._layer = L.layerGroup([
@@ -186,60 +187,65 @@ L.control.layers.minimap = function (baseLayers, overlays, options) {
 };
 
 },{"leaflet-clonelayer":2,"leaflet.sync":3}],2:[function(require,module,exports){
-function cloneLayer(layer) {
-	var options = layer.options;
+function cloneLayer (layer) {
+    var options = layer.options;
 
-	// Tile layers
-	if (layer instanceof L.TileLayer) {
-		return L.tileLayer(layer._url, options);
-	}
-	if (layer instanceof L.ImageOverlay) {
-		return L.imageOverlay(layer._url, layer._bounds, options);
-	}
+    // Tile layers
+    if (layer instanceof L.TileLayer) {
+        return L.tileLayer(layer._url, options);
+    }
+    if (layer instanceof L.ImageOverlay) {
+        return L.imageOverlay(layer._url, layer._bounds, options);
+    }
 
-	// Marker layers
-	if (layer instanceof L.Marker) {
-		return L.marker(layer.getLatLng(), options);
-	}
-	if (layer instanceof L.circleMarker) {
-		return L.circleMarker(layer.getLatLng(), options);
-	}
+    // Marker layers
+    if (layer instanceof L.Marker) {
+        return L.marker(layer.getLatLng(), options);
+    }
+    if (layer instanceof L.circleMarker) {
+        return L.circleMarker(layer.getLatLng(), options);
+    }
 
-	// Vector layers
-	if (layer instanceof L.Polygon || layer instanceof L.Rectangle) {
-		return L.polygon(layer.getLatLngs(), options);
-	}
-	if (layer instanceof L.Polyline) {
-		return L.polyline(layer.getLatLngs(), options);
-	}
-	// MultiPolyline is removed in leaflet 0.8-dev
-	if (L.MultiPolyline && layer instanceof L.MultiPolyline) {
-		return L.polyline(layer.getLatLngs(), options);
-	}
-	// MultiPolygon is removed in leaflet 0.8-dev
-	if (L.MultiPolygon && layer instanceof L.MultiPolygon) {
-		return L.multiPolygon(layer.getLatLngs(), options);
-	}
-	if (layer instanceof L.Circle) {
-		return L.circle(layer.getLatLng(), layer.getRadius(), options);
-	}
-	if (layer instanceof L.GeoJSON) {
-		return L.geoJson(layer.toGeoJSON(), options);
-	}
+    // Vector layers
+    if (layer instanceof L.Rectangle) {
+        return L.rectangle(layer.getBounds(), options);
+    }
+    if (layer instanceof L.Polygon) {
+        return L.polygon(layer.getLatLngs(), options);
+    }
+    if (layer instanceof L.Polyline) {
+        return L.polyline(layer.getLatLngs(), options);
+    }
+    // MultiPolyline is removed in leaflet 1.0.0
+    if (L.MultiPolyline && layer instanceof L.MultiPolyline) {
+        return L.polyline(layer.getLatLngs(), options);
+    }
+    // MultiPolygon is removed in leaflet 1.0.0
+    if (L.MultiPolygon && layer instanceof L.MultiPolygon) {
+        return L.multiPolygon(layer.getLatLngs(), options);
+    }
+    if (layer instanceof L.Circle) {
+        return L.circle(layer.getLatLng(), layer.getRadius(), options);
+    }
+    if (layer instanceof L.GeoJSON) {
+        return L.geoJson(layer.toGeoJSON(), options);
+    }
 
-	// layer/feature groups
-	if (layer instanceof L.LayerGroup || layer instanceof L.FeatureGroup) {
-		var layergroup = L.layerGroup();
-		layer.eachLayer(function (inner) {
-			layergroup.addLayer(cloneLayer(inner));
-		});
-		return layergroup;
-	}
+    // layer/feature groups
+    if (layer instanceof L.LayerGroup || layer instanceof L.FeatureGroup) {
+        var layergroup = L.layerGroup();
+        layer.eachLayer(function (inner) {
+            layergroup.addLayer(cloneLayer(inner));
+        });
+        return layergroup;
+    }
 
-	throw 'Unknown layer, cannot clone this layer';
+    throw 'Unknown layer, cannot clone this layer';
 }
 
-module.exports = cloneLayer;
+if (typeof exports === 'object') {
+    module.exports = cloneLayer;
+}
 
 },{}],3:[function(require,module,exports){
 /*
@@ -342,6 +348,11 @@ module.exports = cloneLayer;
                 var self = this;
                 originalMap._syncMaps.forEach(function (toSync) {
                     L.DomUtil.setPosition(toSync.dragging._draggable._element, self._newPos);
+                    toSync.eachLayer(function (l) {
+                        if (l._google !== undefined) {
+                            l._google.setCenter(originalMap.getCenter());
+                        }
+                    });
                     toSync.fire('moveend');
                 });
             };
