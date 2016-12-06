@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Leaflet layers control minimap Demo</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v1.0.0/leaflet.css" />
+    <style>
+        html {
+            height: 100%;
+            vertical-align: baseline;
+        }
+        body { margin: 0; padding: 0;}
+        .map { height: 400px; width: 100%; }
+
+        h2 {
+            margin-left: 20px;
+        }
+    </style>
+    <!--Fork Me on Github ribbon, we're using the awsome version from simonwhitaker available at https://github.com/simonwhitaker/github-fork-ribbon-css  -->
+    <link rel="stylesheet" href="gh-fork-ribbon.css" />
+    <!--[if IE]>
+        <link rel="stylesheet" href="gh-fork-ribbon.ie.css" />
+    <![endif]-->
+
+    <link rel="stylesheet" href="../control.layers.minimap.css" />
+</head>
+<body>
+    <div class="github-fork-ribbon-wrapper right">
+        <div class="github-fork-ribbon">
+            <a href="https://github.com/jieter/Leaflet.layerscontrol-minimap">Fork me on GitHub</a>
+        </div>
+    </div>
+    <h2>First Map</h2>
+    <div class="map" id="map1"></div>
+    <h2>Second map</h2>
+    <div class="map" id="map2"></div>
+
+    <script src="http://cdn.leafletjs.com/leaflet/v1.0.0/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-providers@1.1.16"></script>
+    <script src="../L.Control.Layers.Minimap.js"></script>
+
+    <script>
+        var center = [52, 4];
+        var zoom = 10;
+
+        var map1 = L.map('map1').setView(center, zoom);
+        var map2 = L.map('map2').setView(center, zoom);
+
+        var baselayers = {
+            'TonerLite': L.tileLayer.provider('Stamen.TonerLite'),
+            'Toner': L.tileLayer.provider('Stamen.Toner'),
+            'OSM HOT': L.tileLayer.provider('OpenStreetMap.HOT'),
+            'Watercolor': L.tileLayer.provider('Stamen.Watercolor')
+        };
+
+        L.control.layers.minimap(baselayers, {}, {
+            collapsed: false
+        }).addTo(map1);
+        baselayers['TonerLite'].addTo(map1);
+
+        var baselayers2 = {
+            'Esri World street map': L.tileLayer.provider('Esri.WorldStreetMap'),
+            'Positron': L.tileLayer.provider('CartoDB.Positron')
+        };
+
+        L.control.layers.minimap(baselayers2, {}, {
+            collapsed: false
+        }).addTo(map2);
+
+        baselayers2['Positron'].addTo(map2);
+
+    </script>
+</body>
+</html>

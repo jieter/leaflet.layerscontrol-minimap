@@ -62,7 +62,6 @@ L.Control.Layers.Minimap = L.Control.Layers.extend({
 
         this._map.on('resize', this._onResize, this);
         this._onResize();
-
         this._map.whenReady(this._onListScroll, this);
     },
 
@@ -110,22 +109,26 @@ L.Control.Layers.Minimap = L.Control.Layers.extend({
     },
 
     _onListScroll: function () {
-        var minimaps = document.querySelectorAll('label[class="leaflet-minimap-container"]');
+        if (!this._map) {
+            return;
+        }
+
+        var minimaps = this._map._container.querySelectorAll('label[class="leaflet-minimap-container"]');
         if (minimaps.length === 0) {
             return;
         }
 
+        // compute indexes of first and last minimap in view
         var first, last;
         if (this.isCollapsed()) {
             first = last = -1;
         } else {
             var minimapHeight = minimaps.item(0).clientHeight;
             var container = this._container;
-            var listHeight = container.clientHeight;
             var scrollTop = container.scrollTop;
 
             first = Math.floor(scrollTop / minimapHeight);
-            last = Math.ceil((scrollTop + listHeight) / minimapHeight);
+            last = Math.ceil((scrollTop + container.clientHeight) / minimapHeight);
         }
 
         for (var i = 0; i < minimaps.length; ++i) {
