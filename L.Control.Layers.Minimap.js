@@ -52,9 +52,13 @@ L.Control.Layers.Minimap = L.Control.Layers.extend({
 
     _initLayout: function () {
         L.Control.Layers.prototype._initLayout.call(this);
+        var container = this._container;
 
-        L.DomUtil.addClass(this._container, 'leaflet-control-layers-minimap');
-        L.DomEvent.on(this._container, 'scroll', this._onListScroll, this);
+        L.DomUtil.addClass(container, 'leaflet-control-layers-minimap');
+        L.DomEvent.on(container, 'scroll', this._onListScroll, this);
+        // disable scroll propagation, Leaflet is going to do this too
+        // https://github.com/Leaflet/Leaflet/issues/5277
+        L.DomEvent.disableScrollPropagation(container)
     },
 
     _update: function () {
@@ -155,7 +159,6 @@ L.Control.Layers.Minimap = L.Control.Layers.extend({
         var minimap = mapContainer._miniMap = L.map(mapContainer, {
             attributionControl: false,
             zoomControl: false,
-            dragging: false,
             scrollWheelZoom: false
         });
 
@@ -192,8 +195,42 @@ L.control.layers.minimap = function (baseLayers, overlays, options) {
 };
 
 },{"leaflet-clonelayer":2,"leaflet.sync":3}],2:[function(require,module,exports){
+function cloneOptions (options) {
+    var ret = {};
+    for (var i in options) {
+        var item = options[i];
+        if (item && item.clone) {
+            ret[i] = item.clone();
+        } else if (item instanceof L.Layer) {
+            ret[i] = cloneLayer(item);
+        } else {
+            ret[i] = item;
+        }
+    }
+    return ret;
+}
+
+function cloneInnerLayers (layer) {
+    var layers = [];
+    layer.eachLayer(function (inner) {
+        layers.push(cloneLayer(inner));
+    });
+    return layers;
+}
+
 function cloneLayer (layer) {
-    var options = layer.options;
+    var options = cloneOptions(layer.options);
+
+    // we need to test for the most specific class first, i.e.
+    // Circle before CircleMarker
+
+    // Renderers
+    if (layer instanceof L.SVG) {
+        return L.svg(options);
+    }
+    if (layer instanceof L.Canvas) {
+        return L.canvas(options);
+    }
 
     // Tile layers
     if (layer instanceof L.TileLayer) {
@@ -207,11 +244,14 @@ function cloneLayer (layer) {
     if (layer instanceof L.Marker) {
         return L.marker(layer.getLatLng(), options);
     }
-    if (layer instanceof L.circleMarker) {
+
+    if (layer instanceof L.Circle) {
+        return L.circle(layer.getLatLng(), layer.getRadius(), options);
+    }
+    if (layer instanceof L.CircleMarker) {
         return L.circleMarker(layer.getLatLng(), options);
     }
 
-    // Vector layers
     if (layer instanceof L.Rectangle) {
         return L.rectangle(layer.getBounds(), options);
     }
@@ -221,31 +261,19 @@ function cloneLayer (layer) {
     if (layer instanceof L.Polyline) {
         return L.polyline(layer.getLatLngs(), options);
     }
-    // MultiPolyline is removed in leaflet 1.0.0
-    if (L.MultiPolyline && layer instanceof L.MultiPolyline) {
-        return L.polyline(layer.getLatLngs(), options);
-    }
-    // MultiPolygon is removed in leaflet 1.0.0
-    if (L.MultiPolygon && layer instanceof L.MultiPolygon) {
-        return L.multiPolygon(layer.getLatLngs(), options);
-    }
-    if (layer instanceof L.Circle) {
-        return L.circle(layer.getLatLng(), layer.getRadius(), options);
-    }
+
     if (layer instanceof L.GeoJSON) {
         return L.geoJson(layer.toGeoJSON(), options);
     }
 
-    // layer/feature groups
-    if (layer instanceof L.LayerGroup || layer instanceof L.FeatureGroup) {
-        var layergroup = L.layerGroup();
-        layer.eachLayer(function (inner) {
-            layergroup.addLayer(cloneLayer(inner));
-        });
-        return layergroup;
+    if (layer instanceof L.LayerGroup) {
+        return L.layerGroup(cloneInnerLayers(layer));
+    }
+    if (layer instanceof L.FeatureGroup) {
+        return L.FeatureGroup(cloneInnerLayers(layer));
     }
 
-    throw 'Unknown layer, cannot clone this layer';
+    throw 'Unknown layer, cannot clone this layer. Leaflet-version: ' + L.version;
 }
 
 if (typeof exports === 'object') {
@@ -258,33 +286,57 @@ if (typeof exports === 'object') {
  */
 
 (function () {
-    'use strict';
+    var NO_ANIMATION = {
+        animate: false,
+        reset: true
+    };
 
     L.Map = L.Map.extend({
         sync: function (map, options) {
             this._initSync();
-            options = options || {};
+            options = L.extend({
+                noInitialSync: false,
+                syncCursor: false,
+                syncCursorMarkerOptions: {
+                    radius: 10,
+                    fillOpacity: 0.3,
+                    color: '#da291c',
+                    fillColor: '#fff'
+                }
+            }, options);
 
             // prevent double-syncing the map:
-            var present = false;
-            this._syncMaps.forEach(function (other) {
-                if (map === other) {
-                    present = true;
-                }
-            });
-
-            if (!present) {
+            if (this._syncMaps.indexOf(map) === -1) {
                 this._syncMaps.push(map);
             }
 
             if (!options.noInitialSync) {
-                map.setView(this.getCenter(), this.getZoom(), {
-                    animate: false,
-                    reset: true
-                });
+                map.setView(this.getCenter(), this.getZoom(), NO_ANIMATION);
+            }
+            if (options.syncCursor) {
+                map.cursor = L.circleMarker([0, 0], options.syncCursorMarkerOptions).addTo(map);
+
+                this._cursors.push(map.cursor);
+
+                this.on('mousemove', this._cursorSyncMove, this);
+                this.on('mouseout', this._cursorSyncOut, this);
             }
             return this;
         },
+
+        _cursorSyncMove: function (e) {
+            this._cursors.forEach(function (cursor) {
+                cursor.setLatLng(e.latlng);
+            });
+        },
+
+        _cursorSyncOut: function (e) {
+            this._cursors.forEach(function (cursor) {
+                // TODO: hide cursor in stead of moving to 0, 0
+                cursor.setLatLng([0, 0]);
+            });
+        },
+
 
         // unsync maps from each other
         unsync: function (map) {
@@ -294,14 +346,24 @@ if (typeof exports === 'object') {
                 this._syncMaps.forEach(function (synced, id) {
                     if (map === synced) {
                         self._syncMaps.splice(id, 1);
+                        if (map.cursor) {
+                            map.cursor.removeFrom(map);
+                        }
                     }
                 });
             }
+            this.off('mousemove', this._cursorSyncMove, this);
+            this.off('mouseout', this._cursorSyncOut, this);
 
             return this;
         },
 
-        // overload methods on originalMap to replay on _syncMaps;
+        // Checks if the maps is synced with anything
+        isSynced: function () {
+            return (this.hasOwnProperty('_syncMaps') && Object.keys(this._syncMaps).length > 0);
+        },
+
+        // overload methods on originalMap to replay interactions on _syncMaps;
         _initSync: function () {
             if (this._syncMaps) {
                 return;
@@ -309,6 +371,7 @@ if (typeof exports === 'object') {
             var originalMap = this;
 
             this._syncMaps = [];
+            this._cursors = [];
 
             L.extend(originalMap, {
                 setView: function (center, zoom, options, sync) {
@@ -341,10 +404,7 @@ if (typeof exports === 'object') {
 
             originalMap.on('zoomend', function () {
                 originalMap._syncMaps.forEach(function (toSync) {
-                    toSync.setView(originalMap.getCenter(), originalMap.getZoom(), {
-                        animate: false,
-                        reset: false
-                    });
+                    toSync.setView(originalMap.getCenter(), originalMap.getZoom(), NO_ANIMATION);
                 });
             }, this);
 
@@ -353,9 +413,9 @@ if (typeof exports === 'object') {
                 var self = this;
                 originalMap._syncMaps.forEach(function (toSync) {
                     L.DomUtil.setPosition(toSync.dragging._draggable._element, self._newPos);
-                    toSync.eachLayer(function (l) {
-                        if (l._google !== undefined) {
-                            l._google.setCenter(originalMap.getCenter());
+                    toSync.eachLayer(function (layer) {
+                        if (layer._google !== undefined) {
+                            layer._google.setCenter(originalMap.getCenter());
                         }
                     });
                     toSync.fire('moveend');

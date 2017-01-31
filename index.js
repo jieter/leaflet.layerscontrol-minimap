@@ -51,9 +51,13 @@ L.Control.Layers.Minimap = L.Control.Layers.extend({
 
     _initLayout: function () {
         L.Control.Layers.prototype._initLayout.call(this);
+        var container = this._container;
 
-        L.DomUtil.addClass(this._container, 'leaflet-control-layers-minimap');
-        L.DomEvent.on(this._container, 'scroll', this._onListScroll, this);
+        L.DomUtil.addClass(container, 'leaflet-control-layers-minimap');
+        L.DomEvent.on(container, 'scroll', this._onListScroll, this);
+        // disable scroll propagation, Leaflet is going to do this too
+        // https://github.com/Leaflet/Leaflet/issues/5277
+        L.DomEvent.disableScrollPropagation(container)
     },
 
     _update: function () {
@@ -154,7 +158,6 @@ L.Control.Layers.Minimap = L.Control.Layers.extend({
         var minimap = mapContainer._miniMap = L.map(mapContainer, {
             attributionControl: false,
             zoomControl: false,
-            dragging: false,
             scrollWheelZoom: false
         });
 
