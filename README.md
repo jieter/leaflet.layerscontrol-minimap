@@ -22,13 +22,6 @@ and add the control to your map:
 L.control.layers.minimap(basemaps, overlays, options).addTo(map);
 ```
 
-## npm
-
-Leaflet layers control minimap is available via npm too:
-
-`npm install leaflet.layerscontrol-minimap`
-
-
 ### Extra options
 
 In addition to the options available for `L.Control.Layers`:
