@@ -56,9 +56,6 @@ L.Control.Layers.Minimap = L.Control.Layers.extend({
 
         L.DomUtil.addClass(container, 'leaflet-control-layers-minimap');
         L.DomEvent.on(container, 'scroll', this._onListScroll, this);
-        // disable scroll propagation, Leaflet is going to do this too
-        // https://github.com/Leaflet/Leaflet/issues/5277
-        L.DomEvent.disableScrollPropagation(container)
     },
 
     _update: function () {
