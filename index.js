@@ -44,9 +44,14 @@ L.Control.Layers.Minimap = L.Control.Layers.extend({
         return !L.DomUtil.hasClass(this._container, 'leaflet-control-layers-expanded');
     },
 
-    _expand: function () {
-        L.Control.Layers.prototype._expand.call(this);
+    expand: function () {
+        L.Control.Layers.prototype.expand.call(this);
         this._onListScroll();
+    },
+
+    _expand: function () {
+        // backwards compatibility, should be removed when leaflet 1.1 arrives.
+        this.expand();
     },
 
     _initLayout: function () {
