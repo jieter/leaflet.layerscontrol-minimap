@@ -72,7 +72,10 @@ var overlays = {
     'Polyline': L.polyline(
         [[48, -3], [50, -3], [50, -4], [52, 4], [0, 0]]
     ),
-    'Circle': L.circle([53, 4], 111111)
+    'Circle 1': L.circle([53, 4], 10000),
+    'Circle 2': L.circle([53, 4.3], 20000),
+    'Circle 3': L.circle([53, 4.6], 30000),
+    'Circle 4': L.circle([53, 4.9], 40000)
 };
 
 

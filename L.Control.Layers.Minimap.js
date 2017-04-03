@@ -57,18 +57,19 @@ L.Control.Layers.Minimap = L.Control.Layers.extend({
 
     _initLayout: function () {
         L.Control.Layers.prototype._initLayout.call(this);
-        var container = this._container;
+        L.DomUtil.addClass(this._container, 'leaflet-control-layers-minimap');
 
-        L.DomUtil.addClass(container, 'leaflet-control-layers-minimap');
-        L.DomEvent.on(container, 'scroll', this._onListScroll, this);
+        var scrollContainer = this._scrollContainer();
+        L.DomEvent.on(scrollContainer, 'scroll', this._onListScroll, this);
         // disable scroll propagation, Leaflet is going to do this too
         // https://github.com/Leaflet/Leaflet/issues/5277
-        L.DomEvent.disableScrollPropagation(container)
+        L.DomEvent.disableScrollPropagation(scrollContainer)
     },
 
     _update: function () {
         L.Control.Layers.prototype._update.call(this);
 
+        if (!map) { return; }
         this._map.on('resize', this._onResize, this);
         this._onResize();
         this._map.whenReady(this._onListScroll, this);
@@ -117,6 +118,14 @@ L.Control.Layers.Minimap = L.Control.Layers.extend({
         this._container.style.maxHeight = (mapHeight - this.options.bottomPadding - this.options.topPadding) + 'px';
     },
 
+    _scrollContainer: function () {
+        if (this.options.collapsed) {
+            return this._container.querySelectorAll('.leaflet-control-layers-list')[0];
+        } else {
+            return this._container;
+        }
+    },
+
     _onListScroll: function () {
         if (!this._map) {
             return;
@@ -134,7 +143,7 @@ L.Control.Layers.Minimap = L.Control.Layers.extend({
         } else {
             var minimapHeight = minimaps.item(0).clientHeight;
             var container = this._container;
-            var scrollTop = container.scrollTop;
+            var scrollTop = this._scrollContainer().scrollTop;
 
             first = Math.floor(scrollTop / minimapHeight);
             last = Math.ceil((scrollTop + container.clientHeight) / minimapHeight);
