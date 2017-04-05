@@ -69,7 +69,7 @@ L.Control.Layers.Minimap = L.Control.Layers.extend({
     _update: function () {
         L.Control.Layers.prototype._update.call(this);
 
-        if (!map) { return; }
+        if (!this._map) { return; }
         this._map.on('resize', this._onResize, this);
         this._onResize();
         this._map.whenReady(this._onListScroll, this);
