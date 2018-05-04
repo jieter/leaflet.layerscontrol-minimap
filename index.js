@@ -96,6 +96,7 @@ L.Control.Layers.Minimap = L.Control.Layers.extend({
         } else {
             input = this._createRadioElement('leaflet-base-layers', checked);
         }
+        this._layerControlInputs.push(input)
         input.layerId = L.stamp(obj.layer);
         span.appendChild(input);
 
