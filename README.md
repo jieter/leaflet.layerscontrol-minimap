@@ -4,7 +4,7 @@ Displays minimaps in a layers control.
 
  - Only updates layers currently visible in the control.
  - Uses [Leaflet.Sync](https://github.com/turban/Leaflet.Sync) and [leaflet-clonelayer](https://github.com/jieter/leaflet-clonelayer)
- - Tested with Leaflet 1.0.3
+ - Tested with Leaflet 1.3.1
  - [Available on npm](https://www.npmjs.com/package/leaflet.layerscontrol-minimap): `npm install leaflet.layerscontrol-minimap`
 
 ## Usage
