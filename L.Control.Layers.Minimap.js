@@ -247,7 +247,25 @@ function cloneLayer (layer) {
         return L.canvas(options);
     }
 
+    // GoogleMutant GridLayer
+    if (L.GridLayer.GoogleMutant && layer instanceof L.GridLayer.GoogleMutant) {
+        var googleLayer = L.gridLayer.googleMutant(options);
+
+        layer._GAPIPromise.then(function () {
+            var subLayers = Object.keys(layer._subLayers); 
+     
+            for (var i in subLayers) {
+                googleLayer.addGoogleLayer(subLayers[i]);
+            }
+        });
+
+        return googleLayer;
+    }
+
     // Tile layers
+    if (layer instanceof L.TileLayer.WMS) {
+        return L.tileLayer.wms(layer._url, options);
+    }
     if (layer instanceof L.TileLayer) {
         return L.tileLayer(layer._url, options);
     }
@@ -281,11 +299,11 @@ function cloneLayer (layer) {
         return L.geoJson(layer.toGeoJSON(), options);
     }
 
+    if (layer instanceof L.FeatureGroup) {
+        return L.featureGroup(cloneInnerLayers(layer));
+    }
     if (layer instanceof L.LayerGroup) {
         return L.layerGroup(cloneInnerLayers(layer));
-    }
-    if (layer instanceof L.FeatureGroup) {
-        return L.FeatureGroup(cloneInnerLayers(layer));
     }
 
     throw 'Unknown layer, cannot clone this layer. Leaflet-version: ' + L.version;
